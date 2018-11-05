@@ -63,39 +63,43 @@ Implementation of self-balanced Binary Search Tree (BST)
 
   `Tree *rightRotation()`: Rotates node to the right.
   Example:
-  x                   y
-  /   \               /   \
-    y     C     *to*    A     x
-    /   \                     /   \
+  ```
+           x                   y
+         /   \               /   \
+        y     C     *to*    A     x
+       /   \                     /   \
       A     B                   B     C
+  ```
 
-      `Tree *leftRotation()`: Rotates node to the left.
-      Example:
-      x                   y
-      /   \               /   \
+  `Tree *leftRotation()`: Rotates node to the left.
+  Example:
+  ```
+           x                   y
+         /   \               /   \
         A     y     *to*    x     C
-        /   \         /   \
-          B     C       A     B
+      /   \         /   \
+     B     C       A     B
+  ```
 
-          `Tree *find(int key)`: Returns the node with `data = key` or `nullptr` if is not present.
+  `Tree *find(int key)`: Returns the node with `data = key` or `nullptr` if is not present.
 
-          `void pathToRoot()`: Print the path to the root.
+  `void pathToRoot()`: Print the path to the root.
 
-          `void printLongestHeight()`: Print the longest height (path to farthest successor).
+  `void printLongestHeight()`: Print the longest height (path to farthest successor).
 
-          `void preOrder()`: Prints the tree in pre-order way.
+  `void preOrder()`: Prints the tree in pre-order way.
 
-          `void inOrder()`: Prints the tree in in-order way.
+  `void inOrder()`: Prints the tree in in-order way.
 
-          `void postOrder()`: Prints the tree in post-order way.
+  `void postOrder()`: Prints the tree in post-order way.
 
-          `void parents()`: Prints all nodes with it's inmediate predecessor.
+  `void parents()`: Prints all nodes with it's inmediate predecessor.
 
-          `void printSpecs()`: Prints the following information of node:
-          - Data
-          - Path to root
-          - Times
-          - Height
-          - Children
-          - Left child
-          - Right child
+  `void printSpecs()`: Prints the following information of node:
+  - Data
+  - Path to root
+  - Times
+  - Height
+  - Children
+  - Left child
+  - Right child
