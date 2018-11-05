@@ -1,22 +1,22 @@
 # AVL Tree
-Implementation of self-balanced Binary Search Tree (BST)
+Implementation of self-balanced Binary Search Tree (BST).
 
 ## Quick Start
   You can create a new Tree in two ways:
-  - Empty tree `Tree();`
-  - Tree with initial node `Tree(int n);`
+  - Empty tree `Tree()`
+  - Tree with initial node with value `n` `Tree(int n)`
 
   And then, you can insert nodes in your tree `tree.insert(int n)`
 
-  For print sorted nodes, you must use `tree.inOrder()`
+  For print sorted nodes, you must use the function `tree.inOrder()`
 
 ### Constants
-  I've already defined two constants: When node hasn't predecessor (NOPARENT) and when node is root (NOTIMES)
+  I've already defined two constants: When node hasn't predecessor (NOPARENT) and when node is root (NOTIMES).
 
   `#define NOPARENT -201`
   `#define NOTIMES -202`
 
-  I propose two constants too, when you need to use -201 or -202
+  I also propose different values, for when you need to use -201 or -202.
 
   `#define NOPARENT -45618540`
   `#define NOTIMES -45093591`
@@ -28,7 +28,7 @@ Implementation of self-balanced Binary Search Tree (BST)
   `int getData()`: Returns the data.
 
   `int getTimes()`: Returns how many times you entered the same value in the tree. For example, if you insert the
-  number 3 twice, then the node with `data = 3` also has `times = 2`.
+  number `3` twice, then the node with `data = 3` also has `times = 2`.
 
   `bool hasParent()`: Returns if this node has predecessor and if predecessor has `times != 1`.
 
