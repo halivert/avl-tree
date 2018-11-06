@@ -67,8 +67,8 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
            x                   y
          /   \               /   \
         y     C      a      A     x
-       /   \                     /   \
-      A     B                   B     C
+      /   \                     /   \
+     A     B                   B     C
   ```
 
   `Tree *leftRotation()`: Rota el nodo a la izquierda.
@@ -77,8 +77,8 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
            x                      y
          /   \                  /   \
         A     y      a         x     C
-      /   \                  /   \
-     B     C                A     B
+            /   \            /   \
+           B     C          A     B
   ```
 
   `Tree *find(int key)`: Devuelve el nodo con `data = key` o `nullptr` si no está presente.

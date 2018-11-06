@@ -67,8 +67,8 @@ Implementation of self-balanced Binary Search Tree (BST).
            x                   y
          /   \               /   \
         y     C     to      A     x
-       /   \                     /   \
-      A     B                   B     C
+      /   \                     /   \
+     A     B                   B     C
   ```
 
   `Tree *leftRotation()`: Rotates node to the left.
@@ -77,8 +77,8 @@ Implementation of self-balanced Binary Search Tree (BST).
            x                      y
          /   \                  /   \
         A     y     to         x     C
-      /   \                  /   \
-     B     C                A     B
+            /   \            /   \
+           B     C          A     B
   ```
 
   `Tree *find(int key)`: Returns the node with `data = key` or `nullptr` if is not present.
