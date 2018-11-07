@@ -11,7 +11,7 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
   Para imprimir los nodos ordenados, debes usar la función `tree.inOrder()`
 
 ### Constantes
-  Ya he definido dos constantes: Cuando el nodo no tiene predecesor (NOPARENT) y cuando el nodo es raíz(NOTIMES).
+  Ya he definido dos constantes: Cuando el nodo no tiene padre (NOPARENT) y cuando el nodo es raíz(NOTIMES).
 
   `#define NOPARENT -201`\
   `#define NOTIMES -202`
@@ -25,43 +25,38 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
   Esta es la lista de todas las funciones incluidas en la biblioteca.
   Todas las funciones trabajan en el nodo actual, a menos que se indique lo contrario.
 
-  `int getData()`: Devuelve el dato.
+  `friend int getNodeHeight(Tree *)`: Devuelve la altura del nodo o `-1` si `node == nullptr`.
+
+  `int const &getData()`: Devuelve el dato.
 
   `int getTimes()`: Devuelve cuantas veces introdujiste el mismo valor en el árbol. Por ejemplo, si introdujiste el
   número `3` dos veces, entonces el nodo con `data = 3` también tiene `times = 2`.
 
-  `bool hasParent()`: Devuelve si el nodo tiene predecesor y si su predecesor tiene `times != 1`.
+  `bool hasParent()`: Devuelve si el nodo tiene padre y si su padre tiene `times != 1`.
 
   `int getHeight()`: Devuelve la altura.
 
-  `int getNumberOfChildren()`: Devuelve el número total de sucesores.
+  `int getNumberOfChildren()`: Devuelve el número total de hijos.
 
-  `Tree *getParent() const`: Devuelve un apuntador al predecesor.
+  `Tree *getParent()`: Devuelve un apuntador al padre.
 
-  `Tree *getLeftChild() const`: Devuelve un apuntador al sucesor izquierdo.
+  `Tree *getLeftChild()`: Devuelve un apuntador al hijo izquierdo.
 
-  `Tree *getRightChild() const`: Devuelve un apuntador al sucesor derecho.
+  `Tree *getRightChild()`: Devuelve un apuntador al hijo derecho.
 
   `Tree *insert(int n)`: Inserta un nuevo nodo con valor `n`.
 
-  `void updateNumberOfChidren()`: Actualiza el número de sucesores en el subárbol y en sus predecesores.
+  `Tree *insert(Tree *&node, int n)`: Inserta un nuevo nodo en `nodo` con valor `n`;
+
+  `void updateNumberOfChidren()`: Actualiza el número de hijos en sus ancestros.
 
   `void AVLcondition()`: Revisa si el subárbol cumple con la condición AVL y rota los nodos necesarios para conseguirlo.
 
   `bool isAVLComplete()`: Devuelve si el subárbol cumple con la condición AVL.
 
-  `Tree *insertLeft(int n)`: Inserta un nuevo nodo a la izquierda con el valor `n`.
+  `void updateHeight()`: Actualiza la altura de sus ancestros.
 
-  `Tree *insertRight(int n)` Inserta un nuevo nodo a la derecha con el valor `n`.
-
-  `void updateParentHeight()`: Actualiza las alturas de todos los predecesores.
-
-  `int updateChildrenHeight()`: Actualiza las alturas de todos los sucesores.
-
-  `void updateHeight()`: Actualiza las alturas de los predecesores y sucesores con la ayuda de `updateParentHeight()`
-  y `updateChildrenHeight()`
-
-  `Tree *rightRotation()`: Rota el nodo a la derecha.
+  `void rightRotation()`: Rota el nodo a la derecha.
   Ejemplo:
   ```
            x                   y
@@ -71,7 +66,7 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
      A     B                   B     C
   ```
 
-  `Tree *leftRotation()`: Rota el nodo a la izquierda.
+  `void leftRotation()`: Rota el nodo a la izquierda.
   Ejemplo:
   ```
            x                      y
@@ -83,23 +78,23 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
 
   `Tree *find(int key)`: Devuelve el nodo con `data = key` o `nullptr` si no está presente.
 
-  `void pathToRoot()`: Imprime el camino hacia la raíz.
+  `std::string pathToRoot()`: Devuelve el camino hacia la raíz.
 
-  `void printLongestHeight()`: Imprime la altura más grande (camino hacia el sucesor más lejano).
+  `std::string longestHeight()`: Devuelve la altura más grande (camino hacia el descendiente más lejano).
 
-  `void preOrder()`: Imprime el árbol en 'pre-order'.
+  `std::string preOrder()`: Devuelve el árbol en 'pre-order'.
 
-  `void inOrder()`: Imprime el árbol en 'in-order'.
+  `std::string inOrder()`: Devuelve el árbol en 'in-order'.
 
-  `void postOrder()`: Imprime el árbol en 'post-order'.
+  `std::string postOrder()`: Devuelve el árbol en 'post-order'.
 
-  `void parents()`: Imprime todos los nodos con su predecesor inmediato.
+  `std::string parents()`: Devuelve todos los nodos con su padre inmediato.
 
-  `void printSpecs()`: Imprime la siguiente información del nodo:
+  `std::string specs()`: Devuelve la siguiente información del nodo:
   - Data (Dato)
   - Path to root (Ruta hacia la raíz)
   - Times (Veces que aparece)
   - Height (Altura)
-  - Children (Número de sucesores)
+  - Children (Número de hijos)
   - Left child (Valor de nodo izquierdo)
   - Right child (Valor de nodo derecho)

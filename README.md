@@ -13,7 +13,7 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
   For print sorted nodes, you must use the function `tree.inOrder()`
 
 ### Constants
-  I've already defined two constants: When node hasn't predecessor (NOPARENT) and when node is root (NOTIMES).
+  I've already defined two constants: When node hasn't parent (NOPARENT) and when node is root (NOTIMES).
 
   `#define NOPARENT -201`\
   `#define NOTIMES -202`
@@ -27,43 +27,38 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
   This is the list of all the functions contained in the library.
   All functions work in the current node, unless otherwise stated.
 
-  `int getData()`: Returns the data.
+  `friend int getNodeHeight(Tree *)`: Returns the height of node or `-1` if `node == nullptr`.
+
+  `int const &getData()`: Returns the data.
 
   `int getTimes()`: Returns how many times you entered the same value in the tree. For example, if you insert the
   number `3` twice, then the node with `data = 3` also has `times = 2`.
 
-  `bool hasParent()`: Returns if this node has predecessor and if predecessor has `times != 1`.
+  `bool hasParent()`: Returns if this node has parent and if parent has `times != 1`.
 
   `int getHeight()`: Returns height.
 
-  `int getNumberOfChildren()`: Returns the number of total successors.
+  `int getNumberOfChildren()`: Returns the number of total children.
 
-  `Tree *getParent() const`: Returns a pointer to the predecessor.
+  `Tree *getParent()`: Returns a pointer to the parent.
 
-  `Tree *getLeftChild() const`: Returns a pointer to the left successor.
+  `Tree *getLeftChild()`: Returns a pointer to the left child.
 
-  `Tree *getRightChild() const`: Returns a pointer to the right successor.
+  `Tree *getRightChild()`: Returns a pointer to the right child.
 
   `Tree *insert(int n)`: Inserts new node with value `n`.
 
-  `void updateNumberOfChidren()`: Updates the number of successors in the subtree and in predecessors.
+  `Tree *insert(Tree *&node, int n)`: Inserts new node at `node` with value `n`;
 
-  `void AVLcondition()`: Checks if subtree is AVL complete and rotates necesary nodes to achieve that.
+  `void updateNumberOfChidren()`: Updates the number of children in its ancestors.
 
-  `bool isAVLComplete()`: Returns if subtree is AVL complete.
+  `void AVLcondition()`: Checks if sub-tree is AVL complete and rotates necesary nodes to achieve that.
 
-  `Tree *insertLeft(int n)`: Inserts new node at left with value `n`.
+  `bool isAVLComplete()`: Returns if sub-tree is AVL complete.
 
-  `Tree *insertRight(int n)` Inserts new node at right with value `n`.
+  `void updateHeight()`: Updates the height of its ancestors.
 
-  `void updateParentHeight()`: Updates heights for all predecessors.
-
-  `int updateChildrenHeight()`: Updates heights for all successors.
-
-  `void updateHeight()`: Updates heights for predecessors and successors with help of `updateParentHeight()` and
-  `updateChildrenHeight()`
-
-  `Tree *rightRotation()`: Rotates node to the right.
+  `void rightRotation()`: Rotates node to the right.
   Example:
   ```
            x                   y
@@ -73,7 +68,7 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
      A     B                   B     C
   ```
 
-  `Tree *leftRotation()`: Rotates node to the left.
+  `void leftRotation()`: Rotates node to the left.
   Example:
   ```
            x                      y
@@ -85,19 +80,19 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
 
   `Tree *find(int key)`: Returns the node with `data = key` or `nullptr` if is not present.
 
-  `void pathToRoot()`: Print the path to the root.
+  `std::string pathToRoot()`: Returns the path to the root.
 
-  `void printLongestHeight()`: Print the longest height (path to farthest successor).
+  `std::string longestHeight()`: Returns the longest height (path to farthest descendant).
 
-  `void preOrder()`: Prints the tree in pre-order way.
+  `std::string preOrder()`: Returns the tree in pre-order way.
 
-  `void inOrder()`: Prints the tree in in-order way.
+  `std::string inOrder()`: Returns the tree in in-order way.
 
-  `void postOrder()`: Prints the tree in post-order way.
+  `std::string postOrder()`: Returns the tree in post-order way.
 
-  `void parents()`: Prints all nodes with it's inmediate predecessor.
+  `std::string parents()`: Returns all nodes with it's inmediate parent.
 
-  `void printSpecs()`: Prints the following information of node:
+  `std::string specs()`: Returns the following information of node:
   - Data
   - Path to root
   - Times
