@@ -1,6 +1,8 @@
 # AVL Tree
 Implementation of self-balanced Binary Search Tree (BST).
 
+_Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/README_ES.md)
+
 ## Quick Start
   You can create a new Tree in two ways:
   - Empty tree `Tree()`

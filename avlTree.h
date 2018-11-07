@@ -1,36 +1,29 @@
-/* Implement AVL Tree with
- *
- * Insert & Delete
- * Min element
- * Successor & Predecessor
- */
-
 #ifndef __AVL_TREE_H__
 #define __AVL_TREE_H__
 
-// #define NOPARENT -45618540
 #define NOPARENT -201
-// #define NOTIMES -45093591
 #define NOTIMES -202
+
 #include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
+#include <sstream>
+#include <string>
 
 struct Tree {
   private:
-    int times;
-    int data;
-    int height;
-    int children;
+    int times, data, height, numberOfChildren;
     Tree *parent;
     Tree *left, *right;
 
   public:
     Tree(Tree *firstChild = nullptr) :
-      times(NOTIMES), data(0), height(0), children(firstChild ? 1 : 0), parent(nullptr), left(firstChild), right(nullptr) {}
+      times(NOTIMES), data(0), height(0), numberOfChildren(firstChild ? 1 : 0),
+      parent(nullptr), left(firstChild), right(nullptr) {}
 
-    Tree(int n) : times(1), data(n), height(0), children(0), parent(new Tree(this)), left(nullptr), right(nullptr) {}
+    Tree(int n) :
+      times(1), data(n), height(0), numberOfChildren(0),
+      parent(new Tree(this)), left(nullptr), right(nullptr) {}
+
+    friend int getNodeHeight(Tree *);
 
     int getData() { return data; }
 
@@ -38,9 +31,9 @@ struct Tree {
 
     bool hasParent() { return parent ? parent->times != NOTIMES : false; }
 
-    int getHeight() { return height; }
+    int getHeight() { return getNodeHeight(this); }
 
-    int getNumberOfChildren() { return children; }
+    int getNumberOfChildren() { return numberOfChildren; }
 
     Tree *getParent() const { return parent; }
 
@@ -72,7 +65,7 @@ struct Tree {
 
     void updateNumberOfChidren() {
       if (hasParent()) {
-        parent->children++;
+        parent->numberOfChildren++;
         parent->updateNumberOfChidren();
       }
     }
@@ -161,10 +154,10 @@ struct Tree {
       if (left) {
         Tree *newLeft = left->right;
 
-        left->children++;
-        if (right) { left->children += right->children + 1; }
-        children--;
-        if (left->left) { children -= (left->left->children + 1); }
+        left->numberOfChildren++;
+        if (right) { left->numberOfChildren += right->numberOfChildren + 1; }
+        numberOfChildren--;
+        if (left->left) { numberOfChildren -= (left->left->numberOfChildren + 1); }
 
         if (parent) {
           if (parent->left == this) { parent->left = left; }
@@ -186,10 +179,10 @@ struct Tree {
       if (right) {
         Tree *newRight = right->left;
 
-        right->children++;
-        if (left) { right->children += left->children + 1; }
-        children--;
-        if (right->right) { children = children - (right->right->children + 1); }
+        right->numberOfChildren++;
+        if (left) { right->numberOfChildren += left->numberOfChildren + 1; }
+        numberOfChildren--;
+        if (right->right) { numberOfChildren = numberOfChildren - (right->right->numberOfChildren + 1); }
 
         if (parent) {
           if (parent->right == this) { parent->right = right; }
@@ -223,63 +216,83 @@ struct Tree {
       return nullptr;
     }
 
-    void pathToRoot() {
-      printf("%d", data);
+    std::string pathToRoot() {
+      std::stringstream ss("");
+      ss << data;
       if (hasParent()) {
-        printf(" <- ");
-        parent->pathToRoot();
+        ss << " <- ";
+        ss << parent->pathToRoot();
       }
+      return ss.str();
     }
 
-    void printLongestHeight() {
-      if (times != NOTIMES) printf("%d", data);
-      int leftHeight = left ? left->height : -1;
-      int rightHeight = right ? right->height : -1;
+    std::string printLongestHeight() {
+      std::stringstream ss;
+      if (times != NOTIMES) ss << data;
+      int leftHeight = getNodeHeight(left);
+      int rightHeight = getNodeHeight(right);
 
       if (leftHeight > rightHeight) {
-        if (times != NOTIMES) printf(" -> ");
-        left->printLongestHeight();
+        if (times != NOTIMES) ss << " -> ";
+        ss << left->printLongestHeight();
       }
       else if (right) {
-        if (times != NOTIMES) printf(" -> ");
-        right->printLongestHeight();
+        if (times != NOTIMES) ss << " -> ";
+        ss << right->printLongestHeight();
       }
+      return ss.str();
     }
 
-    void preOrder() {
-      if (times != NOTIMES) { printf("%d ", data); }
-      if (left) { left->preOrder(); }
-      if (right) { right->preOrder(); }
+    std::string preOrder() {
+      std::stringstream ss;
+      if (times != NOTIMES) { ss << data << ' '; }
+      if (left) { ss << left->preOrder(); }
+      if (right) { ss << right->preOrder(); }
+      return ss.str();
     }
 
-    void inOrder() {
-      if (left) { left->inOrder(); }
-      if (times != NOTIMES) { printf("%d ", data); }
-      if (right) { right->inOrder(); }
+    std::string inOrder() {
+      std::stringstream ss;
+      if (left) { ss << left->inOrder(); }
+      if (times != NOTIMES) { ss << data << ' '; }
+      if (right) { ss << right->inOrder(); }
+      return ss.str();
     }
 
-    void postOrder() {
-      if (left) { left->postOrder(); }
-      if (right) { right->postOrder(); }
-      if (times != NOTIMES) { printf("%d ", data); }
+    std::string postOrder() {
+      std::stringstream ss;
+      if (left) { ss << left->postOrder(); }
+      if (right) { ss << right->postOrder(); }
+      if (times != NOTIMES) { ss << data << ' '; }
+      return ss.str();
     }
 
-    void parents() {
-      if (left) { left->parents(); }
-      if (times != NOTIMES) { printf("%d Parent: %d\n", data, hasParent() ? parent->data : NOPARENT); }
-      if (right) { right->parents(); }
+    std::string parents() {
+      std::stringstream ss;
+      if (left) { ss << left->parents(); }
+      if (times != NOTIMES) { ss << data << " Parent: " << (hasParent() ? parent->data : NOPARENT) << '\n'; }
+      if (right) { ss << right->parents(); }
+      return ss.str();
     }
 
-    void printSpecs() {
-      printf("Data: %d\n", data);
-      printf("Path to root: "); pathToRoot(); puts("");
-      printf("Times: %d\n", times);
-      printf("Height: %d\n", height);
-      printf("Children: %d\n", children);
-      printf("Left child: %d\n", left ? left->data : NOTIMES);
-      printf("Right child: %d\n", right ? right->data : NOTIMES);
+    std::string specs() {
+      if (times == NOTIMES) { return ""; }
+      std::stringstream ss("");
+      ss << "Data: " << data << '\n';
+      ss << "Path to root: " << pathToRoot() << '\n';
+      ss << "Times: " << times << '\n';
+      ss << "Height: " << height << '\n';
+      ss << "Children: " << numberOfChildren << '\n';
+      ss << "Left child: " << (left ? left->data : NOTIMES) << '\n';
+      ss << "Right child: " << (right ? right->data : NOTIMES) << '\n';
+      return ss.str();
     }
 
 };
+
+int getNodeHeight(Tree *node) {
+  if (node != nullptr) { return node->height; }
+  return -1;
+}
 
 #endif
