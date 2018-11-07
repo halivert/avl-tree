@@ -13,12 +13,12 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
 ### Constantes
   Ya he definido dos constantes: Cuando el nodo no tiene predecesor (NOPARENT) y cuando el nodo es raíz(NOTIMES).
 
-  `#define NOPARENT -201`
+  `#define NOPARENT -201`\
   `#define NOTIMES -202`
 
   Propongo además, valores diferentes, para cuando necesites usar -201 o -202.
 
-  `#define NOPARENT -45618540`
+  `#define NOPARENT -45618540`\
   `#define NOTIMES -45093591`
 
 ### Funciones

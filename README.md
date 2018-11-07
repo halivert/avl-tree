@@ -15,12 +15,12 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
 ### Constants
   I've already defined two constants: When node hasn't predecessor (NOPARENT) and when node is root (NOTIMES).
 
-  `#define NOPARENT -201`
+  `#define NOPARENT -201`\
   `#define NOTIMES -202`
 
   I also propose different values, for when you need to use -201 or -202.
 
-  `#define NOPARENT -45618540`
+  `#define NOPARENT -45618540`\
   `#define NOTIMES -45093591`
 
 ### Functions
