@@ -8,33 +8,37 @@
 #include <sstream>
 #include <string>
 
-struct Tree {
+template <typename T>
+class Tree {
   private:
-    int times, data, height, numberOfChildren;
+    int times, height, numberOfChildren;
+    T data;
     Tree *parent;
     Tree *left, *right;
 
   public:
     Tree(Tree *firstChild = nullptr) :
-      times(NOTIMES), data(0), height(0), numberOfChildren(firstChild ? 1 : 0),
+      times(NOTIMES), height(0), numberOfChildren(firstChild ? 1 : 0), data(T()),
       parent(nullptr), left(firstChild), right(nullptr) {}
 
-    Tree(int n) :
-      times(1), data(n), height(0), numberOfChildren(0),
+    Tree(T n) :
+      times(1), height(0), numberOfChildren(0), data(n),
       parent(new Tree(this)), left(nullptr), right(nullptr) {}
 
-    friend int getNodeHeight(Tree *node);
-    int const &getData();
+    template <typename S>
+    friend int getNodeHeight(Tree<S> *node);
+
+    T const &getData();
     int getTimes();
     bool hasParent();
     int getHeight();
     int getNumberOfChildren();
 
-    Tree *getParent();
-    Tree *getLeftChild();
-    Tree *getRightChild();
-    Tree *insert(int n);
-    Tree *insert(Tree *&node, int n);
+    Tree<T> *getParent();
+    Tree<T> *getLeftChild();
+    Tree<T> *getRightChild();
+    Tree<T> *insert(T n);
+    Tree<T> *insert(Tree<T> *&node, T n);
 
     void updateNumberOfChidren();
 
@@ -44,7 +48,7 @@ struct Tree {
     void rightRotation();
     void leftRotation();
 
-    Tree *find(int key);
+    Tree<T> *find(T key);
 
     std::string pathToRoot();
     std::string longestHeight();
@@ -56,28 +60,38 @@ struct Tree {
 
 };
 
-int getNodeHeight(Tree *node) {
+template <typename S>
+int getNodeHeight(Tree<S> *node) {
   if (node != nullptr) { return node->height; }
   return -1;
 }
 
-int const &Tree::getData() { return data; }
+template <typename T>
+T const &Tree<T>::getData() { return data; }
 
-int Tree::getTimes() { return times; }
+template <typename T>
+int Tree<T>::getTimes() { return times; }
 
-bool Tree::hasParent() { return parent ? parent->times != NOTIMES : false; }
+template <typename T>
+bool Tree<T>::hasParent() { return parent ? parent->times != NOTIMES : false; }
 
-int Tree::getHeight() { return getNodeHeight(this); }
+template <typename T>
+int Tree<T>::getHeight() { return getNodeHeight(this); }
 
-int Tree::getNumberOfChildren() { return numberOfChildren; }
+template <typename T>
+int Tree<T>::getNumberOfChildren() { return numberOfChildren; }
 
-Tree *Tree::getParent() { return parent; }
+template <typename T>
+Tree<T> *Tree<T>::getParent() { return parent; }
 
-Tree *Tree::getLeftChild() { return left; }
+template <typename T>
+Tree<T> *Tree<T>::getLeftChild() { return left; }
 
-Tree *Tree::getRightChild() { return right; }
+template <typename T>
+Tree<T> *Tree<T>::getRightChild() { return right; }
 
-Tree *Tree::insert(int n) {
+template <typename T>
+Tree<T> *Tree<T>::insert(T n) {
   if (n < data || times == NOTIMES) {
     if (left) { return left->insert(n); }
     return insert(left, n);
@@ -93,8 +107,9 @@ Tree *Tree::insert(int n) {
   return nullptr;
 }
 
-Tree *Tree::insert(Tree *&node, int n) {
-  node = new Tree(n);
+template <typename T>
+Tree<T> *Tree<T>::insert(Tree<T> *&node, T n) {
+  node = new Tree<T>(n);
   delete(node->parent);
   node->parent = this;
   if (node->hasParent()) { node->parent->updateHeight(); }
@@ -103,14 +118,16 @@ Tree *Tree::insert(Tree *&node, int n) {
   return node;
 }
 
-void Tree::updateNumberOfChidren() {
+template <typename T>
+void Tree<T>::updateNumberOfChidren() {
   if (hasParent()) {
     parent->numberOfChildren++;
     parent->updateNumberOfChidren();
   }
 }
 
-void Tree::AVLcondition() {
+template <typename T>
+void Tree<T>::AVLcondition() {
   Tree *ptr = this;
 
   while (ptr->hasParent()) {
@@ -150,16 +167,19 @@ void Tree::AVLcondition() {
   }
 }
 
-bool Tree::isAVLComplete() {
+template <typename T>
+bool Tree<T>::isAVLComplete() {
   return std::abs(getNodeHeight(left) - getNodeHeight(right)) <= 1;
 }
 
-void Tree::updateHeight() {
+template <typename T>
+void Tree<T>::updateHeight() {
   height = std::max(getNodeHeight(left), getNodeHeight(right)) + 1;
   if (hasParent()) { parent->updateHeight(); }
 }
 
-void Tree::rightRotation() {
+template <typename T>
+void Tree<T>::rightRotation() {
   if (left) {
     Tree *newLeft = left->right;
 
@@ -183,7 +203,8 @@ void Tree::rightRotation() {
   }
 }
 
-void Tree::leftRotation() {
+template <typename T>
+void Tree<T>::leftRotation() {
   if (right) {
     Tree *newRight = right->left;
 
@@ -207,7 +228,8 @@ void Tree::leftRotation() {
   }
 }
 
-Tree *Tree::find(int key) {
+template <typename T>
+Tree<T> *Tree<T>::find(T key) {
   if (key < data or times == NOTIMES) {
     if (left) { return left->find(key); }
     return nullptr;
@@ -223,7 +245,8 @@ Tree *Tree::find(int key) {
   return nullptr;
 }
 
-std::string Tree::pathToRoot() {
+template <typename T>
+std::string Tree<T>::pathToRoot() {
   std::stringstream ss("");
   ss << data;
   if (hasParent()) {
@@ -233,7 +256,8 @@ std::string Tree::pathToRoot() {
   return ss.str();
 }
 
-std::string Tree::printLongestHeight() {
+template <typename T>
+std::string Tree<T>::longestHeight() {
   std::stringstream ss;
   if (times != NOTIMES) ss << data;
   int leftHeight = getNodeHeight(left);
@@ -241,16 +265,17 @@ std::string Tree::printLongestHeight() {
 
   if (leftHeight > rightHeight) {
     if (times != NOTIMES) ss << " -> ";
-    ss << left->printLongestHeight();
+    ss << left->longestHeight();
   }
   else if (right) {
     if (times != NOTIMES) ss << " -> ";
-    ss << right->printLongestHeight();
+    ss << right->longestHeight();
   }
   return ss.str();
 }
 
-std::string Tree::preOrder() {
+template <typename T>
+std::string Tree<T>::preOrder() {
   std::stringstream ss;
   if (times != NOTIMES) { ss << data << ' '; }
   if (left) { ss << left->preOrder(); }
@@ -258,7 +283,8 @@ std::string Tree::preOrder() {
   return ss.str();
 }
 
-std::string Tree::inOrder() {
+template <typename T>
+std::string Tree<T>::inOrder() {
   std::stringstream ss;
   if (left) { ss << left->inOrder(); }
   if (times != NOTIMES) { ss << data << ' '; }
@@ -266,7 +292,8 @@ std::string Tree::inOrder() {
   return ss.str();
 }
 
-std::string Tree::postOrder() {
+template <typename T>
+std::string Tree<T>::postOrder() {
   std::stringstream ss;
   if (left) { ss << left->postOrder(); }
   if (right) { ss << right->postOrder(); }
@@ -274,15 +301,21 @@ std::string Tree::postOrder() {
   return ss.str();
 }
 
-std::string Tree::parents() {
+template <typename T>
+std::string Tree<T>::parents() {
   std::stringstream ss;
   if (left) { ss << left->parents(); }
-  if (times != NOTIMES) { ss << data << " Parent: " << (hasParent() ? parent->data : NOPARENT) << '\n'; }
+  if (times != NOTIMES) {
+    ss << data;
+    if (hasParent()) ss << " parent: " << parent->data << '\n';
+    else ss << " is root\n";
+  }
   if (right) { ss << right->parents(); }
   return ss.str();
 }
 
-std::string Tree::specs() {
+template <typename T>
+std::string Tree<T>::specs() {
   if (times == NOTIMES) { return ""; }
   std::stringstream ss("");
   ss << "Data: " << data << '\n';
@@ -290,8 +323,8 @@ std::string Tree::specs() {
   ss << "Times: " << times << '\n';
   ss << "Height: " << height << '\n';
   ss << "Children: " << numberOfChildren << '\n';
-  ss << "Left child: " << (left ? left->data : NOTIMES) << '\n';
-  ss << "Right child: " << (right ? right->data : NOTIMES) << '\n';
+  if (left) { ss << "Left child: " << left->data << '\n'; }
+  if (right) { ss << "Right child: " << right->data << '\n'; }
   return ss.str();
 }
 
