@@ -44,10 +44,7 @@ struct Tree {
     Tree *insert(int n) {
       if (n < data || times == NOTIMES) {
         if (left) { return left->insert(n); }
-        Tree *newNode = insertLeft(n);
-        newNode->updateNumberOfChidren();
-        newNode->AVLcondition();
-        return newNode;
+        return insert(left, n);
       }
       else if (n == data) {
         times++;
@@ -55,12 +52,19 @@ struct Tree {
       }
       else {
         if (right) { return right->insert(n); }
-        Tree *newNode = insertRight(n);
-        newNode->updateNumberOfChidren();
-        newNode->AVLcondition();
-        return newNode;
+        return insert(right, n);
       }
       return nullptr;
+    }
+
+    Tree *insert(Tree *&tree, int n) {
+      tree = new Tree(n);
+      delete(tree->parent);
+      tree->parent = this;
+      if (tree->hasParent()) { tree->parent->updateHeight(); }
+      tree->updateNumberOfChidren();
+      tree->AVLcondition();
+      return tree;
     }
 
     void updateNumberOfChidren() {
@@ -111,43 +115,12 @@ struct Tree {
     }
 
     bool isAVLComplete() {
-      int leftHeight = left ? left->height : -1;
-      int rightHeight = right ? right->height : -1;
-      return std::abs(leftHeight - rightHeight) <= 1;
-    }
-
-    Tree *insertLeft(int n) {
-      left = new Tree(n);
-      delete(left->parent);
-      left->parent = this;
-      if (left->hasParent()) { left->parent->updateHeight(); }
-      return left;
-    }
-
-    Tree *insertRight(int n) {
-      right = new Tree(n);
-      delete(right->parent);
-      right->parent = this;
-      if (right->hasParent()) { right->parent->updateHeight(); }
-      return right;
-    }
-
-    void updateParentHeight() {
-      int leftHeight = left ? left->height : -1;
-      int rightHeight = right ? right->height : -1;
-      height = std::max(leftHeight, rightHeight) + 1;
-      if (hasParent()) { parent->updateParentHeight(); }
-    }
-
-    int updateChildrenHeight() {
-      int leftHeight = left ? left->updateChildrenHeight() : -1;
-      int rightHeight = right ? right->updateChildrenHeight() : -1;
-      return std::max(leftHeight, rightHeight) + 1;
+      return std::abs(getNodeHeight(left) - getNodeHeight(right)) <= 1;
     }
 
     void updateHeight() {
-      updateChildrenHeight();
-      updateParentHeight();
+      height = std::max(getNodeHeight(left), getNodeHeight(right)) + 1;
+      if (hasParent()) { parent->updateHeight(); }
     }
 
     Tree *rightRotation() {
