@@ -27,14 +27,14 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
   This is the list of all the functions contained in the library.
   All functions work in the current node, unless otherwise stated.
 
-  `friend int getNodeHeight(Tree *)`: Returns the height of node or `-1` if `node == nullptr`.
+  `friend int getNodeHeight(Tree *)`: Returns the height of node or `-1` if node is empty.
 
   `int const &getData()`: Returns the data.
 
   `int getTimes()`: Returns how many times you entered the same value in the tree. For example, if you insert the
   number `3` twice, then the node with `data = 3` also has `times = 2`.
 
-  `bool hasParent()`: Returns if this node has parent and if parent has `times != 1`.
+  `bool hasParent()`: Returns true if the node isn't the root node.
 
   `int getHeight()`: Returns height.
 
@@ -52,13 +52,13 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
 
   `void updateNumberOfChidren()`: Updates the number of children in its ancestors.
 
-  `void AVLcondition()`: Checks if sub-tree is AVL complete and rotates necesary nodes to achieve that.
+  `void AVLcondition()`: Checks if the sub-tree is AVL complete and rotates necesary nodes to achieve that.
 
-  `bool isAVLComplete()`: Returns if sub-tree is AVL complete.
+  `bool isAVLComplete()`: Returns true if the sub-tree is AVL complete.
 
   `void updateHeight()`: Updates the height of its ancestors.
 
-  `void rightRotation()`: Rotates node to the right.
+  `void rightRotation()`: Rotates the node to the right.
   Example:
   ```
            x                   y
@@ -68,12 +68,12 @@ _Translations:_ [Español](https://github.com/halivert/avl-tree/blob/master/READ
      A     B                   B     C
   ```
 
-  `void leftRotation()`: Rotates node to the left.
+  `void leftRotation()`: Rotates the node to the left.
   Example:
   ```
            x                      y
          /   \                  /   \
-        A     y     to         x     C
+        A     y      to        x     C
             /   \            /   \
            B     C          A     B
   ```

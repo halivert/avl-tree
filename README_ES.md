@@ -25,14 +25,14 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
   Esta es la lista de todas las funciones incluidas en la biblioteca.
   Todas las funciones trabajan en el nodo actual, a menos que se indique lo contrario.
 
-  `friend int getNodeHeight(Tree *)`: Devuelve la altura del nodo o `-1` si `node == nullptr`.
+  `friend int getNodeHeight(Tree *)`: Devuelve la altura del nodo o `-1` si el nodo está vacío.
 
   `int const &getData()`: Devuelve el dato.
 
   `int getTimes()`: Devuelve cuantas veces introdujiste el mismo valor en el árbol. Por ejemplo, si introdujiste el
   número `3` dos veces, entonces el nodo con `data = 3` también tiene `times = 2`.
 
-  `bool hasParent()`: Devuelve si el nodo tiene padre y si su padre tiene `times != 1`.
+  `bool hasParent()`: Devuelve verdadero si el nodo no es el nodo raíz.
 
   `int getHeight()`: Devuelve la altura.
 
@@ -52,7 +52,7 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
 
   `void AVLcondition()`: Revisa si el subárbol cumple con la condición AVL y rota los nodos necesarios para conseguirlo.
 
-  `bool isAVLComplete()`: Devuelve si el subárbol cumple con la condición AVL.
+  `bool isAVLComplete()`: Devuelve verdadero si el subárbol cumple con la condición AVL.
 
   `void updateHeight()`: Actualiza la altura de sus ancestros.
 
@@ -71,7 +71,7 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
   ```
            x                      y
          /   \                  /   \
-        A     y      a         x     C
+        A     y       a        x     C
             /   \            /   \
            B     C          A     B
   ```

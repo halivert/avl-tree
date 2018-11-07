@@ -39,11 +39,8 @@ struct Tree {
     void updateNumberOfChidren();
 
     void AVLcondition();
-
     bool isAVLComplete();
-
     void updateHeight();
-
     void rightRotation();
     void leftRotation();
 
