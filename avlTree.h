@@ -62,7 +62,7 @@ class Tree {
 
 template <typename S>
 int getNodeHeight(Tree<S> *node) {
-  if (node != nullptr) { return node->height; }
+  if (node) { return node->height; }
   return -1;
 }
 
@@ -92,19 +92,30 @@ Tree<T> *Tree<T>::getRightChild() { return right; }
 
 template <typename T>
 Tree<T> *Tree<T>::insert(T n) {
-  if (n < data || times == NOTIMES) {
-    if (left) { return left->insert(n); }
-    return insert(left, n);
+  Tree<T> **ptr, *ptrParent;
+  if (times == NOTIMES) {
+    if (left) { ptr = &left; }
+    else { return insert(left, n); }
   }
-  else if (n == data) {
-    times++;
-    return this;
+  else ptr = &parent;
+
+  for (ptrParent = *ptr; (*ptr)->hasParent(); ptr = &(*ptr)->parent);
+
+  while (*ptr) {
+    ptrParent = *ptr;
+    if (n < (*ptr)->data) {
+      ptr = &(*ptr)->left;
+    }
+    else if (n == (*ptr)->data) {
+      (*ptr)->times++;
+      return *ptr;
+    }
+    else {
+      ptr = &(*ptr)->right;
+    }
   }
-  else {
-    if (right) { return right->insert(n); }
-    return insert(right, n);
-  }
-  return nullptr;
+
+  return ptrParent->insert(*ptr, n);
 }
 
 template <typename T>
@@ -174,8 +185,13 @@ bool Tree<T>::isAVLComplete() {
 
 template <typename T>
 void Tree<T>::updateHeight() {
-  height = std::max(getNodeHeight(left), getNodeHeight(right)) + 1;
-  if (hasParent()) { parent->updateHeight(); }
+  Tree<T> *ptr = this;
+
+  ptr->height = std::max(getNodeHeight(ptr->left), getNodeHeight(ptr->right)) + 1;
+  while (ptr->hasParent()) {
+    ptr = ptr->parent;
+    ptr->height = std::max(getNodeHeight(ptr->left), getNodeHeight(ptr->right)) + 1;
+  }
 }
 
 template <typename T>
@@ -198,6 +214,7 @@ void Tree<T>::rightRotation() {
     parent = left;
 
     left = newLeft;
+    if (left) left->parent = this;
 
     updateHeight();
   }
@@ -223,6 +240,7 @@ void Tree<T>::leftRotation() {
     parent = right;
 
     right = newRight;
+    if (right) right->parent = this;
 
     updateHeight();
   }
@@ -230,26 +248,21 @@ void Tree<T>::leftRotation() {
 
 template <typename T>
 Tree<T> *Tree<T>::find(T key) {
-  if (key < data or times == NOTIMES) {
-    if (left) { return left->find(key); }
-    return nullptr;
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+
+  while (ptr) {
+    if (key < ptr->data) { ptr = ptr->left; }
+    else if (key == ptr->data) { break; }
+    else { ptr = ptr->right; }
   }
 
-  if (key == data) { return this; }
-
-  if (key > data) {
-    if (right) { return right->find(key); }
-    return nullptr;
-  }
-
-  return nullptr;
+  return ptr;
 }
 
 template <typename T>
 std::string Tree<T>::pathToRoot() {
   std::stringstream ss("");
-  Tree<T> *ptr = this;
-  while (ptr) {
+  for (Tree<T> *ptr = this; ptr; ) {
     ss << ptr->data;
     if (ptr->hasParent()) {
       ss << " -> ";
@@ -291,7 +304,7 @@ template <typename T>
 std::string Tree<T>::inOrder() {
   std::stringstream ss;
   if (left) { ss << left->inOrder(); }
-  if (times != NOTIMES) { ss << data << ' '; }
+  for (int i = 0; i < times; i++) { ss << data << ' '; }
   if (right) { ss << right->inOrder(); }
   return ss.str();
 }
