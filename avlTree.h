@@ -58,6 +58,10 @@ class Tree {
     std::string parents();
     std::string specs();
 
+    Tree<T> *findMinimum();
+    Tree<T> *findMaximum();
+    Tree<T> *findPredecessor();
+    Tree<T> *findSuccessor();
 };
 
 template <typename S>
@@ -342,7 +346,55 @@ std::string Tree<T>::specs() {
   ss << "Children: " << numberOfChildren << '\n';
   if (left) { ss << "Left child: " << left->data << '\n'; }
   if (right) { ss << "Right child: " << right->data << '\n'; }
+  Tree<T> *pred = findPredecessor();
+  Tree<T> *succ = findSuccessor();
+  if (pred) { ss << "Predecessor: " << pred->data << '\n'; }
+  if (succ) { ss << "Successor: " << succ->data << '\n'; }
   return ss.str();
+}
+
+template <typename T>
+Tree<T> *Tree<T>::findMinimum() {
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+  while (ptr->left) { ptr = ptr->left; }
+  return ptr;
+}
+
+template <typename T>
+Tree<T> *Tree<T>::findMaximum() {
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+  while (ptr->right) { ptr = ptr->right; }
+  return ptr;
+}
+
+template <typename T>
+Tree<T> *Tree<T>::findPredecessor() {
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+  if (ptr->left) { return ptr->left->findMaximum(); }
+
+  Tree<T> *ptrParent = ptr->parent;
+  while (ptrParent and (ptrParent->left == ptr)) {
+    ptr = ptrParent;
+    ptrParent = ptr->parent;
+  }
+
+  if (!ptrParent) return nullptr;
+  return ptrParent->times != NOTIMES ? ptrParent : nullptr;
+}
+
+template <typename T>
+Tree<T> *Tree<T>::findSuccessor() {
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+  if (ptr->right) { return ptr->right->findMinimum(); }
+
+  Tree<T> *ptrParent = ptr->parent;
+  while (ptrParent and (ptrParent->right == ptr)) {
+    ptr = ptrParent;
+    ptrParent = ptr->parent;
+  }
+
+  if (!ptrParent) return nullptr;
+  return ptrParent->times != NOTIMES ? ptrParent : nullptr;
 }
 
 #endif
