@@ -248,10 +248,14 @@ Tree<T> *Tree<T>::find(T key) {
 template <typename T>
 std::string Tree<T>::pathToRoot() {
   std::stringstream ss("");
-  ss << data;
-  if (hasParent()) {
-    ss << " -> ";
-    ss << parent->pathToRoot();
+  Tree<T> *ptr = this;
+  while (ptr) {
+    ss << ptr->data;
+    if (ptr->hasParent()) {
+      ss << " -> ";
+      ptr = ptr->getParent();
+    }
+    else break;
   }
   return ss.str();
 }
@@ -307,7 +311,7 @@ std::string Tree<T>::parents() {
   if (left) { ss << left->parents(); }
   if (times != NOTIMES) {
     ss << data;
-    if (hasParent()) ss << " parent: " << parent->data << '\n';
+    if (hasParent()) ss << " parent: " << parent->getData() << '\n';
     else ss << " is root\n";
   }
   if (right) { ss << right->parents(); }
