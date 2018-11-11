@@ -25,6 +25,8 @@ class Tree {
       times(1), height(0), numberOfChildren(0), data(n),
       parent(new Tree(this)), left(nullptr), right(nullptr) {}
 
+    ~Tree() {}
+
     template <typename S>
     friend int getNodeHeight(Tree<S> *node);
 
@@ -39,8 +41,10 @@ class Tree {
     Tree<T> *getRightChild();
     Tree<T> *insert(T n);
     Tree<T> *insert(Tree<T> *&node, T n);
+    Tree<T> *remove(T n);
+    Tree<T> *remove(Tree<T> *&node);
 
-    void updateNumberOfChidren();
+    void updateNumberOfChidren(bool inserted = true);
 
     void AVLcondition();
     bool isAVLComplete();
@@ -62,6 +66,11 @@ class Tree {
     Tree<T> *findMaximum();
     Tree<T> *findPredecessor();
     Tree<T> *findSuccessor();
+
+    bool isLeaf();
+    std::string levelOrder();
+    std::string givenLevel(int level);
+
 };
 
 template <typename S>
@@ -134,10 +143,117 @@ Tree<T> *Tree<T>::insert(Tree<T> *&node, T n) {
 }
 
 template <typename T>
-void Tree<T>::updateNumberOfChidren() {
-  if (hasParent()) {
-    parent->numberOfChildren++;
-    parent->updateNumberOfChidren();
+Tree<T> *Tree<T>::remove(T n) {
+  Tree<T> **ptr, **ptrParent;
+  if (times == NOTIMES) {
+    if (left) { ptr = &left; }
+    else { return insert(left, n); }
+  }
+  else ptr = &parent;
+
+  for (ptrParent = ptr; (*ptr)->hasParent(); ptr = &(*ptr)->parent);
+
+  while (*ptr) {
+    ptrParent = ptr;
+    if (n < (*ptr)->data) {
+      ptr = &(*ptr)->left;
+    }
+    else if (n == (*ptr)->data) {
+      if ((*ptr)->times > 1) {
+        (*ptr)->times--;
+        return *ptr;
+      }
+      ptrParent = &(*ptr)->parent;
+      return (*ptrParent)->remove(*ptr);
+    }
+    else {
+      ptr = &(*ptr)->right;
+    }
+  }
+
+  return nullptr;
+}
+
+template <typename T>
+Tree<T> *Tree<T>::remove(Tree<T> *&node) {
+  Tree<T> *successor, *predecessor;
+  if (left != node and right != node) return nullptr;
+  bool leftChild = left and left == node;
+
+  if (node->isLeaf()) {
+    if (leftChild) {
+      delete(left);
+      left = nullptr;
+    }
+    else {
+      delete(right);
+      right = nullptr;
+    }
+    updateHeight();
+    updateNumberOfChidren(false);
+    AVLcondition();
+    return this;
+  }
+
+  successor = node->findSuccessor();
+  predecessor = node->findPredecessor();
+
+  /*
+  if (successor) {
+    Tree<T> *successorParent;
+    successor->left = node->left;
+    if (node->right != successor) {
+      successor->right = node->right;
+      successorParent = successor->parent;
+    }
+    successor->parent = this;
+
+    if (leftChild) left = successor;
+    else right = successor;
+
+    if (successorParent) {
+      if (successorParent->left == successor) successorParent->left = nullptr;
+      if (successorParent->right == successor) successorParent->right = nullptr;
+
+      successorParent->updateHeight();
+      successorParent->updateNumberOfChidren(false);
+      successorParent->AVLcondition();
+    }
+  }
+  else if (predecessor) {
+    Tree<T> *predecessorParent;
+    if (node->left != predecessor) {
+      predecessor->left = node->left;
+      predecessorParent = predecessor->parent;
+    }
+    predecessor->right = node->right;
+    predecessor->parent = this;
+
+    if (leftChild) left = predecessor;
+    else right = predecessor;
+
+    if (predecessorParent) {
+      if (predecessorParent->left == predecessor) predecessorParent->left = nullptr;
+      if (predecessorParent->right == predecessor) predecessorParent->right = nullptr;
+
+      predecessorParent->updateHeight();
+      predecessorParent->updateNumberOfChidren(false);
+      predecessorParent->AVLcondition();
+    }
+  }
+
+  delete(node);
+  */
+  return this;
+}
+
+template <typename T>
+void Tree<T>::updateNumberOfChidren(bool inserted) {
+  Tree<T> *ptr = this;
+  if (!inserted) { ptr->numberOfChildren--; }
+  while (ptr->hasParent()) {
+    ptr = ptr->parent;
+    ptr->numberOfChildren += inserted ? 1 : -1;
   }
 }
 
@@ -147,7 +263,6 @@ void Tree<T>::AVLcondition() {
 
   while (ptr->hasParent()) {
     ptr = ptr->parent;
-
     if (!ptr->isAVLComplete()) {
       int rotation = 0;
       int leftHeight = getNodeHeight(ptr->left);
@@ -157,13 +272,13 @@ void Tree<T>::AVLcondition() {
         leftHeight = getNodeHeight(ptr->left->left);
         rightHeight = getNodeHeight(ptr->left->right);
         if (rightHeight > leftHeight) { rotation = 1; }
-        else if (leftHeight > rightHeight) { rotation = 2; }
+        else { rotation = 2; }
       }
       else if (rightHeight > leftHeight) {
         leftHeight = getNodeHeight(ptr->right->left);
         rightHeight = getNodeHeight(ptr->right->right);
         if (leftHeight > rightHeight) { rotation = 3; }
-        else if (rightHeight > leftHeight) { rotation = 4; }
+        else { rotation = 4; }
       }
 
       switch (rotation) {
@@ -265,7 +380,7 @@ Tree<T> *Tree<T>::find(T key) {
 
 template <typename T>
 std::string Tree<T>::pathToRoot() {
-  std::stringstream ss("");
+  std::stringstream ss;
   for (Tree<T> *ptr = this; ptr; ) {
     ss << ptr->data;
     if (ptr->hasParent()) {
@@ -338,7 +453,7 @@ std::string Tree<T>::parents() {
 template <typename T>
 std::string Tree<T>::specs() {
   if (times == NOTIMES) { return ""; }
-  std::stringstream ss("");
+  std::stringstream ss;
   ss << "Data: " << data << '\n';
   ss << "Path to root: " << pathToRoot() << '\n';
   ss << "Times: " << times << '\n';
@@ -395,6 +510,34 @@ Tree<T> *Tree<T>::findSuccessor() {
 
   if (!ptrParent) return nullptr;
   return ptrParent->times != NOTIMES ? ptrParent : nullptr;
+}
+
+template <typename T>
+bool Tree<T>::isLeaf() {
+  return !left and !right;
+}
+
+template <typename T>
+std::string Tree<T>::levelOrder() {
+  Tree<T> *ptr = times == NOTIMES ? left : this;
+  std::stringstream ss;
+  for (int i = 0; i <= ptr->height; i++) {
+    ss << ptr->givenLevel(i + 1) << '\n';
+  }
+  return ss.str();
+}
+
+template <typename T>
+std::string Tree<T>::givenLevel(int level) {
+  std::stringstream ss;
+  if (level == 1) {
+    ss << data << ' ';
+  }
+  else {
+    if (left) ss << left->givenLevel(level - 1);
+    if (right) ss << right->givenLevel(level - 1);
+  }
+  return ss.str();
 }
 
 #endif
