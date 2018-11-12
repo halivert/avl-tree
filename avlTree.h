@@ -28,7 +28,7 @@ class Tree {
     ~Tree() {}
 
     template <typename S>
-    friend int getNodeHeight(Tree<S> *node);
+      friend int getNodeHeight(Tree<S> *node);
 
     T const &getData();
     int getTimes();
@@ -44,7 +44,7 @@ class Tree {
     Tree<T> *remove(T n);
     Tree<T> *remove(Tree<T> *&node);
 
-    void updateNumberOfChidren(bool inserted = true);
+    void updateNumberOfChidren();
 
     void AVLcondition();
     bool isAVLComplete();
@@ -95,7 +95,7 @@ template <typename T>
 int Tree<T>::getNumberOfChildren() { return numberOfChildren; }
 
 template <typename T>
-Tree<T> *Tree<T>::getParent() { return parent; }
+Tree<T> *Tree<T>::getParent() { return hasParent() ? parent : this; }
 
 template <typename T>
 Tree<T> *Tree<T>::getLeftChild() { return left; }
@@ -136,7 +136,8 @@ Tree<T> *Tree<T>::insert(Tree<T> *&node, T n) {
   node = new Tree<T>(n);
   delete(node->parent);
   node->parent = this;
-  if (node->hasParent()) { node->parent->updateHeight(); }
+
+  node->updateHeight();
   node->updateNumberOfChidren();
   node->AVLcondition();
   return node;
@@ -144,39 +145,17 @@ Tree<T> *Tree<T>::insert(Tree<T> *&node, T n) {
 
 template <typename T>
 Tree<T> *Tree<T>::remove(T n) {
-  Tree<T> **ptr, **ptrParent;
-  if (times == NOTIMES) {
-    if (left) { ptr = &left; }
-    else { return insert(left, n); }
+  Tree<T> *ptr = find(n), *ptrParent;
+  if (ptr and ptr->parent) {
+    ptrParent = ptr->parent;
+    return ptrParent->remove(ptr);
   }
-  else ptr = &parent;
-
-  for (ptrParent = ptr; (*ptr)->hasParent(); ptr = &(*ptr)->parent);
-
-  while (*ptr) {
-    ptrParent = ptr;
-    if (n < (*ptr)->data) {
-      ptr = &(*ptr)->left;
-    }
-    else if (n == (*ptr)->data) {
-      if ((*ptr)->times > 1) {
-        (*ptr)->times--;
-        return *ptr;
-      }
-      ptrParent = &(*ptr)->parent;
-      return (*ptrParent)->remove(*ptr);
-    }
-    else {
-      ptr = &(*ptr)->right;
-    }
-  }
-
   return nullptr;
 }
 
 template <typename T>
 Tree<T> *Tree<T>::remove(Tree<T> *&node) {
-  Tree<T> *successor, *predecessor;
+  Tree<T> *next, *toUpdate;
   if (left != node and right != node) return nullptr;
   bool leftChild = left and left == node;
 
@@ -189,80 +168,54 @@ Tree<T> *Tree<T>::remove(Tree<T> *&node) {
       delete(right);
       right = nullptr;
     }
-    updateHeight();
-    updateNumberOfChidren(false);
-    AVLcondition();
-    return this;
+
+    toUpdate = this;
+  }
+  else if ((node->left != nullptr) ^ (node->right != nullptr)) {
+    Tree<T> *child = node->left ? node->left : node->right;
+    if (leftChild) {
+      delete(left);
+      left = child;
+    }
+    else {
+      delete(right);
+      right = child;
+    }
+    child->parent = this;
+
+    toUpdate = this;
+  }
+  else {
+    next = node->findSuccessor();
+    if (!next) next = node->findPredecessor();
+    if (!next) return this;
+
+    node->data = next->data;
+    toUpdate = next->parent;
+    toUpdate->remove(next);
   }
 
-  successor = node->findSuccessor();
-  predecessor = node->findPredecessor();
-
-  /*
-  if (successor) {
-    Tree<T> *successorParent;
-    successor->left = node->left;
-    if (node->right != successor) {
-      successor->right = node->right;
-      successorParent = successor->parent;
-    }
-    successor->parent = this;
-
-    if (leftChild) left = successor;
-    else right = successor;
-
-    if (successorParent) {
-      if (successorParent->left == successor) successorParent->left = nullptr;
-      if (successorParent->right == successor) successorParent->right = nullptr;
-
-      successorParent->updateHeight();
-      successorParent->updateNumberOfChidren(false);
-      successorParent->AVLcondition();
-    }
-  }
-  else if (predecessor) {
-    Tree<T> *predecessorParent;
-    if (node->left != predecessor) {
-      predecessor->left = node->left;
-      predecessorParent = predecessor->parent;
-    }
-    predecessor->right = node->right;
-    predecessor->parent = this;
-
-    if (leftChild) left = predecessor;
-    else right = predecessor;
-
-    if (predecessorParent) {
-      if (predecessorParent->left == predecessor) predecessorParent->left = nullptr;
-      if (predecessorParent->right == predecessor) predecessorParent->right = nullptr;
-
-      predecessorParent->updateHeight();
-      predecessorParent->updateNumberOfChidren(false);
-      predecessorParent->AVLcondition();
-    }
-  }
-
-  delete(node);
-  */
-  return this;
+  toUpdate->updateHeight();
+  toUpdate->updateNumberOfChidren();
+  toUpdate->AVLcondition();
+  return toUpdate;
 }
 
 template <typename T>
-void Tree<T>::updateNumberOfChidren(bool inserted) {
+void Tree<T>::updateNumberOfChidren() {
   Tree<T> *ptr = this;
-  if (!inserted) { ptr->numberOfChildren--; }
-  while (ptr->hasParent()) {
-    ptr = ptr->parent;
-    ptr->numberOfChildren += inserted ? 1 : -1;
-  }
+  do {
+    ptr->numberOfChildren = ptr->left ? ptr->left->numberOfChildren + 1 : 0;
+    ptr->numberOfChildren += ptr->right ? ptr->right->numberOfChildren + 1 : 0;
+    ptr = ptr->hasParent() ? ptr->parent : nullptr;
+  } while (ptr);
 }
 
 template <typename T>
 void Tree<T>::AVLcondition() {
   Tree *ptr = this;
 
-  while (ptr->hasParent()) {
-    ptr = ptr->parent;
+  do {
     if (!ptr->isAVLComplete()) {
       int rotation = 0;
       int leftHeight = getNodeHeight(ptr->left);
@@ -294,7 +247,8 @@ void Tree<T>::AVLcondition() {
           break;
       }
     }
-  }
+    ptr = ptr->hasParent() ? ptr->parent : nullptr;
+  } while (ptr);
 }
 
 template <typename T>
