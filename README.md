@@ -120,6 +120,8 @@ _Translations:_
   - Children
   - Left child
   - Right child
+  - Predecessor
+  - Successor
 
   `Tree<T> *findMinimum()`: Returns the minimum value in the tree.
 

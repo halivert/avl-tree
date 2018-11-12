@@ -121,6 +121,8 @@ Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
   - Children (Número de hijos)
   - Left child (Valor de nodo izquierdo)
   - Right child (Valor de nodo derecho)
+  - Predecessor (Predecesor)
+  - Successor (Sucesor)
 
   `Tree<T> *findMinimum()`: Devuelve el valor mínimo en el árbol.
 
