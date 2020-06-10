@@ -1,8 +1,7 @@
 ---
-author: halivert
 title: "Árbol AVL"
 date: 2020-06-09 21:17
-layout: page
+layout: repo
 ---
 
 
