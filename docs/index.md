@@ -1,5 +1,6 @@
 ---
 layout: repo
+github_url: https://github.com/halivert/avl-tree
 title: "Árbol AVL"
 description: >-
   Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
