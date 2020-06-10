@@ -1,3 +1,11 @@
+---
+author: halivert
+title: "Árbol AVL"
+date: 2020-06-09 21:17
+layout: page
+---
+
+
 # AVL Tree
 Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.
 
