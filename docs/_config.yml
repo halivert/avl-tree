@@ -1,6 +1,8 @@
 remote_theme: halivert/halivert.github.io@main
 
+title: "Árbol AVL"
+
 defaults:
-  -
-    values:
+  - values:
       layout: "repo"
+      has_instant_view: true
