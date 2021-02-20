@@ -1,5 +1,4 @@
 ---
-layout: repo
 title: "Árbol AVL"
 description: >-
   Implementación de Árbol Binario de Búsqueda (ABB) auto-balanceado.

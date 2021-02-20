@@ -1,1 +1,6 @@
-remote_theme: halivert/repo-site-template@main
+remote_theme: halivert/halivert.github.io@main
+
+defaults:
+  -
+    values:
+      layout: "repo"
