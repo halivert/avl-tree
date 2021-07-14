@@ -1,6 +1,7 @@
 remote_theme: halivert/halivert.github.io@main
 
 title: "Árbol AVL"
+baseurl: ""
 
 defaults:
   - values:
